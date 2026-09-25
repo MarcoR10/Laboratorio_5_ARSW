@@ -2,24 +2,32 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { configureStore, createSlice } from '@reduxjs/toolkit'
-import BlueprintsPage from '../src/pages/BlueprintsPage.jsx'
+import BlueprintsPage from '../pages/BlueprintsPage.jsx'
 
 // Mock de thunks del slice para no requerir backend
-vi.mock('../src/features/blueprints/blueprintsSlice.js', () => ({
-  fetchAuthors: () => ({ type: 'blueprints/fetchAuthors' }),
+vi.mock('../features/blueprints/blueprintsSlice.js', () => ({
+  fetchAll: () => ({ type: 'blueprints/fetchAll' }),
   fetchByAuthor: (author) => ({ type: 'blueprints/fetchByAuthor', payload: author }),
   fetchBlueprint: (payload) => ({ type: 'blueprints/fetchBlueprint', payload }),
 }))
+
+const idle = { loading: false, error: null }
 
 function makeStore(preloaded) {
   const slice = createSlice({
     name: 'blueprints',
     initialState: {
+      all: [],
       authors: [],
       byAuthor: {},
+      selectedAuthor: '',
       current: null,
-      status: 'idle',
-      error: null,
+      requests: {
+        fetchAll: idle,
+        fetchByAuthor: idle,
+        fetchBlueprint: idle,
+        createBlueprint: idle,
+      },
       ...preloaded,
     },
     reducers: {},

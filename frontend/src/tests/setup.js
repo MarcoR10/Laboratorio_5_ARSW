@@ -1,7 +1,8 @@
 import '@testing-library/jest-dom'
 
 // ---- Canvas mock para jsdom ----
-if (!HTMLCanvasElement.prototype.getContext) {
+// jsdom sí define getContext pero devuelve null, así que lo reemplazamos siempre
+if (typeof HTMLCanvasElement !== 'undefined') {
   HTMLCanvasElement.prototype.getContext = () => {
     const noop = () => {}
     return {

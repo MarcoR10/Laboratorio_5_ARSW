@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
-import BlueprintForm from '../src/components/BlueprintForm.jsx'
+import BlueprintForm from '../components/BlueprintForm.jsx'
 
 describe('BlueprintForm', () => {
   it('envía el formulario con puntos parseados', () => {

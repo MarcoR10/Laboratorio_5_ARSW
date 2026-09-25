@@ -1,55 +1,64 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import api from '../../services/apiClient.js'
+import { createAsyncThunk, createSlice, isFulfilled, isPending, isRejected } from '@reduxjs/toolkit'
+import blueprintsService from '../../services/blueprintsService.js'
 
-export const fetchAuthors = createAsyncThunk('blueprints/fetchAuthors', async () => {
-  const { data } = await api.get('/blueprints')
-  // Expecting API returns array of {author, name, points}
-  const authors = [...new Set(data.map((bp) => bp.author))]
-  return authors
-})
+export const fetchAll = createAsyncThunk('blueprints/fetchAll', () => blueprintsService.getAll())
 
 export const fetchByAuthor = createAsyncThunk('blueprints/fetchByAuthor', async (author) => {
-  const { data } = await api.get(`/blueprints/${encodeURIComponent(author)}`)
-  return { author, items: data }
+  const items = await blueprintsService.getByAuthor(author)
+  return { author, items }
 })
 
-export const fetchBlueprint = createAsyncThunk(
-  'blueprints/fetchBlueprint',
-  async ({ author, name }) => {
-    const { data } = await api.get(
-      `/blueprints/${encodeURIComponent(author)}/${encodeURIComponent(name)}`,
-    )
-    return data
-  },
+export const fetchBlueprint = createAsyncThunk('blueprints/fetchBlueprint', ({ author, name }) =>
+  blueprintsService.getByAuthorAndName(author, name),
 )
 
-export const createBlueprint = createAsyncThunk('blueprints/createBlueprint', async (payload) => {
-  const { data } = await api.post('/blueprints', payload)
-  return data
-})
+export const createBlueprint = createAsyncThunk('blueprints/createBlueprint', (payload) =>
+  blueprintsService.create(payload),
+)
+
+// Cada thunk tiene su propio loading/error para que uno no pise al otro en la UI
+const requestState = () => ({ loading: false, error: null })
+
+export const initialState = {
+  all: [],
+  authors: [],
+  byAuthor: {},
+  selectedAuthor: '',
+  current: null,
+  requests: {
+    fetchAll: requestState(),
+    fetchByAuthor: requestState(),
+    fetchBlueprint: requestState(),
+    createBlueprint: requestState(),
+  },
+}
+
+// Va con matchers porque RTK no deja repetir addCase para el mismo action
+function trackRequest(builder, thunk, key) {
+  builder
+    .addMatcher(isPending(thunk), (s) => {
+      s.requests[key] = { loading: true, error: null }
+    })
+    .addMatcher(isFulfilled(thunk), (s) => {
+      s.requests[key].loading = false
+    })
+    .addMatcher(isRejected(thunk), (s, a) => {
+      s.requests[key] = { loading: false, error: a.error.message || 'Error inesperado' }
+    })
+}
 
 const slice = createSlice({
   name: 'blueprints',
-  initialState: {
-    authors: [],
-    byAuthor: {},
-    current: null,
-    status: 'idle',
-    error: null,
-  },
+  initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAuthors.pending, (s) => {
-        s.status = 'loading'
+      .addCase(fetchAll.fulfilled, (s, a) => {
+        s.all = a.payload
+        s.authors = [...new Set(a.payload.map((bp) => bp.author))]
       })
-      .addCase(fetchAuthors.fulfilled, (s, a) => {
-        s.status = 'succeeded'
-        s.authors = a.payload
-      })
-      .addCase(fetchAuthors.rejected, (s, a) => {
-        s.status = 'failed'
-        s.error = a.error.message
+      .addCase(fetchByAuthor.pending, (s, a) => {
+        s.selectedAuthor = a.meta.arg
       })
       .addCase(fetchByAuthor.fulfilled, (s, a) => {
         s.byAuthor[a.payload.author] = a.payload.items
@@ -59,8 +68,15 @@ const slice = createSlice({
       })
       .addCase(createBlueprint.fulfilled, (s, a) => {
         const bp = a.payload
+        s.all.push(bp)
+        if (!s.authors.includes(bp.author)) s.authors.push(bp.author)
         if (s.byAuthor[bp.author]) s.byAuthor[bp.author].push(bp)
       })
+
+    trackRequest(builder, fetchAll, 'fetchAll')
+    trackRequest(builder, fetchByAuthor, 'fetchByAuthor')
+    trackRequest(builder, fetchBlueprint, 'fetchBlueprint')
+    trackRequest(builder, createBlueprint, 'createBlueprint')
   },
 })
 

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import reducer from '../src/features/blueprints/blueprintsSlice.js'
+import reducer from '../features/blueprints/blueprintsSlice.js'
 
 describe('blueprints slice', () => {
   it('should initialize correctly', () => {

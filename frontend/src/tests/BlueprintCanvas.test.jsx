@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '@testing-library/react'
-import BlueprintCanvas from '../src/components/BlueprintCanvas.jsx'
+import BlueprintCanvas from '../components/BlueprintCanvas.jsx'
 
 describe('BlueprintCanvas', () => {
   it('renderiza un canvas y llama getContext', () => {
