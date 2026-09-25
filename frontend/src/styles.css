@@ -1,79 +1,208 @@
 :root {
   --gap: 12px;
   --radius: 14px;
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  /* Modo Oscuro (Por defecto) */
+  --bg-main: #0b1220;
+  --bg-container: #111827;
+  --bg-input: #1f2937;
+  --bg-table-header: #1a2234;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #1f2937;
+  --border-input: #374151;
+  --table-hover: rgba(31, 41, 55, 0.4);
 }
+
+/* Tema Claro */
+body.light-theme {
+  --bg-main: #f1f5f9;
+  --bg-container: #ffffff;
+  --bg-input: #f8fafc;
+  --bg-table-header: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --border-input: #cbd5e1;
+  --table-hover: rgba(226, 232, 240, 0.6);
+}
+
 * {
   box-sizing: border-box;
 }
+
 body {
   margin: 0;
-  background: #0f172a;
-  color: #e2e8f0;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: inherit;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
+
 a {
   color: inherit;
   text-decoration: none;
 }
-.container {
-  max-width: 1100px;
+
+.container, .app-container {
+  max-width: 1200px;
   margin: 0 auto;
   padding: 24px;
 }
-.card {
-  background: #111827;
-  border: 1px solid #1f2937;
-  border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+
+/* Encabezado */
+header, .app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1rem;
 }
-.btn {
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: 1px solid #334155;
-  background: #1f2937;
-  cursor: pointer;
+
+header h1, .app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0;
 }
-.btn.primary {
-  background: #2563eb;
-  border-color: #1d4ed8;
-  color: white;
-}
+
+/* Estructura de Grids */
 .grid {
   display: grid;
   gap: var(--gap);
 }
+
 .grid.cols-2 {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 350px 1fr; /* Columna izquierda fija para controles/listas y la derecha flexible para el canvas */
 }
-.input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #334155;
-  background: #0b1220;
-  color: #e2e8f0;
+
+@media (max-width: 900px) {
+  .grid.cols-2 {
+    grid-template-columns: 1fr; /* Se apila en pantallas pequeñas */
+  }
 }
-label {
-  font-size: 0.9rem;
-  color: #94a3b8;
+
+/* Tarjetas (Cards) */
+.card {
+  background-color: var(--bg-container);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
-header {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: space-between;
+
+.card h3, .card h4 {
+  margin-top: 0;
+  color: var(--text-main);
+  font-size: 1.1rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
   margin-bottom: 16px;
 }
-nav a {
-  padding: 6px 10px;
-  border-radius: 8px;
+
+/* Formularios e Inputs */
+.form-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
 }
+
+.input-field, .input {
+  flex: 1;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-input);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text-main);
+  font-size: 0.95rem; /* Corregido de ln a rem */
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-field:focus, .input:focus {
+  border-color: #3b82f6;
+}
+
+label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+/* Botones */
+.btn {
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  border: 1px solid var(--border-input);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.btn:hover {
+  background-color: var(--border-input);
+}
+
+.btn.primary {
+  background-color: #2563eb;
+  border-color: #1d4ed8;
+  color: white;
+}
+
+.btn.primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+/* Tablas de Planos */
+.table-container {
+  overflow-x: auto;
+}
+
+.blueprints-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.blueprints-table th,
+.blueprints-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.blueprints-table th {
+  background-color: var(--bg-table-header);
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.blueprints-table tr:hover {
+  background-color: var(--table-hover);
+}
+
+/* Navegación */
+nav {
+  display: flex;
+  gap: 8px;
+}
+
+nav a {
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: var(--text-muted);
+}
+
 nav a.active {
-  background: #334155;
+  background: var(--bg-input);
+  color: var(--text-main);
 }

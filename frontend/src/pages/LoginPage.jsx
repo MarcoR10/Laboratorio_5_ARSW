@@ -36,7 +36,7 @@ export default function LoginPage() {
         </div>
       </div>
       {error && <p style={{ color: '#f87171' }}>{error}</p>}
-      <button className="btn primary" style={{ marginTop: 12 }}>
+      <button className="btn primary" style={{ width: '100%', marginTop: '20px', padding: '12px' }}>
         Ingresar
       </button>
     </form>
