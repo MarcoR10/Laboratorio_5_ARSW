@@ -73,6 +73,14 @@ blueprints-react-lab/
 - Incluir un componente `BlueprintCanvas` con un identificador propio.
 - Definir dimensiones adecuadas (ej. `520×360`) para que no ocupe toda la pantalla pero permita dibujar los planos.
 
+R/ Aqui presentamos como se ve el diseño inicial del canvas
+
+![img1.png](Images/img1.png) 
+
+y parte del codigo del mismo
+
+![img2.png](Images/img2.png)
+
 ## 2. Listar los planos de un autor
 
 - Permitir ingresar el nombre de un autor y consultar sus planos desde el backend (o mock).
